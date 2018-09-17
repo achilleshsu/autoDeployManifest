@@ -1,0 +1,53 @@
+name: apps-influxdb-stage
+releases:
+  - name: &release_name influxdb
+    version: '1.0.13'
+
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: '3586.7'
+
+instance_groups:
+- name: influxdb
+  instances: 1
+  jobs:
+  - name: influxdb
+    release: *release_name
+  - name: chronograf
+    release: *release_name
+  - name: telegraf
+    release: *release_name
+  - name: kapacitor
+    release: *release_name
+  vm_type: large
+  persistent_disk_type: 512GB
+  stemcell: trusty
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: &network_name db-service
+    static_ips:
+    - 10.100.22.1
+  azs:
+  - z1
+
+properties:
+  influxdb:
+    admin:
+      user: ((apps_influxdb_stage_root))
+      password: ((apps_influxdb_stage_rootpassword))
+    database: test
+
+variables:
+- name: apps_influxdb_stage_root
+  type: password
+- name: apps_influxdb_stage_rootpassword
+  type: password
+    
+update:
+  canaries: 1
+  max_in_flight: 10
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000

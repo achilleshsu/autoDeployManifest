@@ -1,0 +1,110 @@
+name: ops-postgresql-stage
+
+instance_groups:
+- name: redis_psql
+  azs:
+  - z1
+  - z2
+  instances: 2
+  vm_type: small
+  stemcell: default
+  persistent_disk_type: 128GB
+  networks:
+  - name: &network_name db-service
+    static_ips:
+    - 10.100.41.1
+    - 10.100.41.2
+  jobs:
+  - name: redis
+    release: postgres-replica-release
+    properties:
+      password: ((ops_postgresql_stage_redis_6379))
+  - name: redis2
+    release: postgres-replica-release
+    properties:
+      password: ((ops_postgresql_stage_redis_6380))
+  - name: redis3
+    releases: postgres-replica-release
+    properties:
+      password: ((ops_postgresql_stage_redis_6381))
+#  - name: redis-sentinel
+#    release: postgres-replica-release
+#    properties:
+#      redis:
+#        port: 6379
+#        password: ((ops_postgresql_stage_redis_6379))
+#      redis2:
+#        port: 6380
+#        password: ((ops_postgresql_stage_redis_6380))
+#      redis3:
+#        port: 6381
+#        password: ((ops_postgresql_stage_redis_6381))
+  - name: postgres
+    release: postgres-replica-release
+    properties:
+      password: ((ops_postgresql_stage_rootpassword))
+      metering:
+        database: ((ops_postgresql_stage_metering))
+        username: ((ops_postgresql_stage_metering_root))
+        password: ((ops_postgresql_stage_metering_rootpassword))
+        database2: ((ops_postgresql_stage_metering2))
+      sso:
+        database: ((ops_postgresql_stage_sso))
+        username: ((ops_postgresql_stage_sso_root))
+        password: ((ops_postgresql_stage_sso_rootpassword))
+  - name: postgres_exporter
+    release: prometheus
+    properties:
+      postgres_exporter:
+        datasource_name: postgresql://postgres:((ops_postgresql_stage_rootpassword))@127.0.0.1:5432/postgres
+  - name: sysctl
+    release: sysctl
+    properties:
+      sysctl_conf:
+        net.ipv4.tcp_keepalive_time = 120
+        net.ipv4.tcp_keepalive_intvl = 30
+        net.ipv4.tcp_keepalive_probes = 8        
+
+variables:
+- name: ops_postgresql_stage_rootpassword
+  type: password
+- name: ops_postgresql_stage_metering2
+  type: password
+- name: ops_postgresql_stage_metering
+  type: password
+- name: ops_postgresql_stage_metering_root
+  type: password
+- name: ops_postgresql_stage_metering_rootpassword
+  type: password
+- name: ops_postgresql_stage_sso
+  type: password
+- name: ops_postgresql_stage_sso_root
+  type: password
+- name: ops_postgresql_stage_sso_rootpassword
+  type: password
+- name: ops_postgresql_stage_redis_6379
+  type: password
+- name: ops_postgresql_stage_redis_6380
+  type: password
+- name: ops_postgresql_stage_redis_6381
+  type: password        
+
+update:
+  canaries: 1
+  max_in_flight: 10
+  serial: true
+  canary_watch_time: 1000-20000
+  update_watch_time: 1000-20000
+
+stemcells:
+- alias: default
+  os: ubuntu-trusty
+  version: '3586.7'
+
+releases:
+- name: postgres-replica-release
+  version: '1.0.11'
+- name: prometheus
+  version: '19.0.0'
+- name: sysctl
+  version: '2'
