@@ -8,7 +8,7 @@ releases:
 stemcells:
 - alias: trusty
   os: ubuntu-trusty
-  version: '3586.7'
+  version: 'latest'
 
 instance_groups:
 - name: mongodb

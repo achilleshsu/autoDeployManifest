@@ -49,13 +49,13 @@ update:
 stemcells:
 - alias: default
   os: ubuntu-trusty
-  version: '3586.7'
+  version: 'latest'
 
 releases:
 - name: postgres-replica-release
   version: '1.0.11'
 - name: prometheus
-  version: '19.0.0'
+  version: '22.0.0'
 #- name: sysctl
 #  version: '2'
   

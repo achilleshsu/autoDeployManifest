@@ -24,7 +24,7 @@ instance_groups:
     properties:
       password: ((ops_postgresql_stage_redis_6380))
   - name: redis3
-    releases: postgres-replica-release
+    release: postgres-replica-release
     properties:
       password: ((ops_postgresql_stage_redis_6381))
 #  - name: redis-sentinel
@@ -99,7 +99,7 @@ update:
 stemcells:
 - alias: default
   os: ubuntu-trusty
-  version: '3586.7'
+  version: 'latest'
 
 releases:
 - name: postgres-replica-release

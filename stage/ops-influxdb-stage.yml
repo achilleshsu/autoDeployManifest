@@ -1,14 +1,14 @@
 name: ops-influxdb-stage
 releases:
   - name: &release_name influxdb
-    version: '1.0.13'
+    version: '1.0.14'
   - name: prometheus
     version: '19.0.0'
 
 stemcells:
 - alias: trusty
   os: ubuntu-trusty
-  version: '3586.7'
+  version: 'latest'
 
 instance_groups:
 - name: influxdb
