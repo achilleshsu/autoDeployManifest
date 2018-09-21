@@ -1,3 +1,7 @@
+# 1.0.2
+## Feture
+ [+] fix metering information
+
 # 1.0.1
 ## Feture
  [+] fix bug

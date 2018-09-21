@@ -44,10 +44,9 @@ instance_groups:
     properties:
       password: ((ops_postgresql_stage_rootpassword))
       metering:
-        database: ((ops_postgresql_stage_metering))
-        username: ((ops_postgresql_stage_metering_root))
-        password: ((ops_postgresql_stage_metering_rootpassword))
-        database2: ((ops_postgresql_stage_metering2))
+        database: ((ops_postgresql_stage_billing))
+        username: ((ops_postgresql_stage_billing_root))
+        password: ((ops_postgresql_stage_billing_rootpassword))
       sso:
         database: ((ops_postgresql_stage_sso))
         username: ((ops_postgresql_stage_sso_root))
@@ -68,13 +67,11 @@ instance_groups:
 variables:
 - name: ops_postgresql_stage_rootpassword
   type: password
-- name: ops_postgresql_stage_metering2
+- name: ops_postgresql_stage_billing
   type: password
-- name: ops_postgresql_stage_metering
+- name: ops_postgresql_stage_billing_root
   type: password
-- name: ops_postgresql_stage_metering_root
-  type: password
-- name: ops_postgresql_stage_metering_rootpassword
+- name: ops_postgresql_stage_billing_rootpassword
   type: password
 - name: ops_postgresql_stage_sso
   type: password
