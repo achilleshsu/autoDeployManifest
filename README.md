@@ -7,7 +7,7 @@ git clone https://github.com/achilleshsu/autoDeployManifest.git
 1. 確認部屬環境是production或是stage
 2. 進入 production 或是 stage 資料夾
 ```
-cd autoDeployManifest/postgresql 
+cd autoDeployManifest/production
 ```
 ```
 cd autoDeployManifest/stage

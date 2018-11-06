@@ -1,3 +1,8 @@
+# 1.0.3
+## Feture
+ [+] fix README.md bug 
+ [+] fix ops-postgresql-production prometheus version
+
 # 1.0.2
 ## Feture
  [+] fix metering information

@@ -102,6 +102,6 @@ releases:
 - name: postgres-replica-release
   version: '1.0.11'
 - name: prometheus
-  version: '19.0.0'
+  version: '22.0.0'
 - name: sysctl
   version: '2'
