@@ -1,4 +1,4 @@
-name: apps-influxdb-production
+name: ops-influxdb-healthcheck
 releases:
   - name: &release_name influxdb
     version: '1.0.14'
@@ -20,7 +20,7 @@ instance_groups:
     release: *release_name
   - name: kapacitor
     release: *release_name
-  vm_type: large
+  vm_type: medium
   persistent_disk_type: 512GB
   stemcell: trusty
   networks:
@@ -29,25 +29,25 @@ instance_groups:
     - gateway
     name: &network_name db-service
     static_ips:
-    - 10.100.20.1
+    - 10.100.22.1
   azs:
   - z1
 
 properties:
   influxdb:
     admin:
-      user: ((apps_influxdb_production_root))
-      password: ((apps_influxdb_production_root_password))
+      user: ((ops_influxdb_production_root))
+      password: ((ops_influxdb_production_root_password))
     database: test
 
 variables:
-- name: apps_influxdb_production_root
+- name: ops_influxdb_production_root
   type: password
-- name: apps_influxdb_production_root_password
+- name: ops_influxdb_production_root_password
   type: password
-
+    
 update:
   canaries: 1
-  max_in_flight: 10
+  max_in_flight: 1
   canary_watch_time: 1000-30000
   update_watch_time: 1000-30000

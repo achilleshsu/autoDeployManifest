@@ -1,7 +1,7 @@
 name: apps-mongodb-production
 releases:
   - name: &release_name mongo-shard-release
-    version: '1.0.13'
+    version: '1.0.14'
   - name: &prometheus prometheus
     version: '22.0.0'
 
@@ -21,10 +21,10 @@ instance_groups:
         connection: 3000
         admin:
           user: ((apps_mongodb_production_admin))
-          password: ((apps_mongodb_production_adminpassword))
+          password: ((apps_mongodb_production_admin_password))
         root:
           user: ((apps_mongodb_production_root))
-          password: ((apps_mongodb_production_rootpassword))
+          password: ((apps_mongodb_production_root_password))
         keyfile: |
           Si3ro+EPlvm+Mh51yRPW/y8Uwb+CYtRpAraffnkghK3vHbSl3D6GyZaLSrrqJf3U
           no9XyH0afUAgsUpx5nztOj+Xb3HPxvbzDkbwxCYI69NL/ckyH9J4raSEriTaxJ0B
@@ -47,7 +47,7 @@ instance_groups:
     properties:
       mongodb_exporter:
         mongodb:
-          uri: mongodb://((apps_mongodb_production_root)):((apps_mongodb_production_rootpassword))@127.0.0.1:27017
+          uri: mongodb://((apps_mongodb_production_root)):((apps_mongodb_production_root_password))@127.0.0.1:27017
           
   vm_type: medium
   persistent_disk_type: 512GB
@@ -69,16 +69,16 @@ instance_groups:
 variables:
 - name: apps_mongodb_production_root
   type: password
-- name: apps_mongodb_production_rootpassword
+- name: apps_mongodb_production_root_password
   type: password
 - name: apps_mongodb_production_admin
   type: password
-- name: apps_mongodb_production_adminpassword
+- name: apps_mongodb_production_admin_password
   type: password
 
 
 update:
   canaries: 1
-  max_in_flight: 10
+  max_in_flight: 1
   canary_watch_time: 1000-30000
   update_watch_time: 1000-30000

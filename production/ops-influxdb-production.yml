@@ -37,17 +37,17 @@ properties:
   influxdb:
     admin:
       user: ((ops_influxdb_production_root))
-      password: ((ops_influxdb_production_rootpassword))
+      password: ((ops_influxdb_production_root_password))
     database: test
 
 variables:
 - name: ops_influxdb_production_root
   type: password
-- name: ops_influxdb_production_rootpassword
+- name: ops_influxdb_production_root_password
   type: password
     
 update:
   canaries: 1
-  max_in_flight: 10
+  max_in_flight: 1
   canary_watch_time: 1000-30000
   update_watch_time: 1000-30000

@@ -1,17 +1,25 @@
+# 1.0.4
+## Feature
+ [+] fix deploy release version
+ [+] add health check influx manifest
+ [+] fix rootpassword to root_password
+ [+] fix max_in_flight to 1
+
+
 # 1.0.3
-## Feture
+## Feature
  [+] fix README.md bug 
  [+] fix ops-postgresql-production prometheus version
 
 # 1.0.2
-## Feture
+## Feature
  [+] fix metering information
 
 # 1.0.1
-## Feture
+## Feature
  [+] fix bug
 
 # 1.0.0
-## Feture
+## Feature
  [+] 自動化產生密碼 template
  [+] 自動化簡易操作說明

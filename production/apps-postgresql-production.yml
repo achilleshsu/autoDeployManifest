@@ -18,7 +18,7 @@ instance_groups:
   - name: postgres
     release: postgres-replica-release
     properties:
-      password: ((apps_postgresql_production_rootpassword))
+      password: ((apps_postgresql_production_root_password))
       database2: ((apps_postgresql_production_metering))
 #  - name: sysctl
 #    release: sysctl
@@ -31,17 +31,17 @@ instance_groups:
     release: prometheus
     properties:
       postgres_exporter:
-        datasource_name: postgresql://postgres:((apps_postgresql_production_rootpassword))@127.0.0.1:5432/postgres
+        datasource_name: postgresql://postgres:((apps_postgresql_production_root_password))@127.0.0.1:5432/postgres
 
 variables:
-- name: apps_postgresql_production_rootpassword
+- name: apps_postgresql_production_root_password
   type: password
 - name: apps_postgresql_production_metering
   type: password
         
 update:
   canaries: 1
-  max_in_flight: 10
+  max_in_flight: 1
   serial: true
   canary_watch_time: 1000-20000
   update_watch_time: 1000-20000

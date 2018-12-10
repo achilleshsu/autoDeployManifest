@@ -42,20 +42,20 @@ instance_groups:
   - name: postgres
     release: postgres-replica-release
     properties:
-      password: ((ops_postgresql_production_rootpassword))
+      password: ((ops_postgresql_production_root_password))
       metering:
         database: ((ops_postgresql_production_billing))
         username: ((ops_postgresql_production_billing_root))
-        password: ((ops_postgresql_production_billing_rootpassword))
+        password: ((ops_postgresql_production_billing_root_password))
       sso:
         database: ((ops_postgresql_production_sso))
         username: ((ops_postgresql_production_sso_root))
-        password: ((ops_postgresql_production_sso_rootpassword))
+        password: ((ops_postgresql_production_sso_root_password))
   - name: postgres_exporter
     release: prometheus
     properties:
       postgres_exporter:
-        datasource_name: postgresql://postgres:((ops_postgresql_production_rootpassword))@127.0.0.1:5432/postgres
+        datasource_name: postgresql://postgres:((ops_postgresql_production_root_password))@127.0.0.1:5432/postgres
   - name: sysctl
     release: sysctl
     properties:
@@ -65,19 +65,19 @@ instance_groups:
         net.ipv4.tcp_keepalive_probes = 8        
 
 variables:
-- name: ops_postgresql_production_rootpassword
+- name: ops_postgresql_production_root_password
   type: password
 - name: ops_postgresql_production_billing
   type: password
 - name: ops_postgresql_production_billing_root
   type: password
-- name: ops_postgresql_production_billing_rootpassword
+- name: ops_postgresql_production_billing_root_password
   type: password
 - name: ops_postgresql_production_sso
   type: password
 - name: ops_postgresql_production_sso_root
   type: password
-- name: ops_postgresql_production_sso_rootpassword
+- name: ops_postgresql_production_sso_root_password
   type: password
 - name: ops_postgresql_production_redis_6379
   type: password
@@ -88,7 +88,7 @@ variables:
 
 update:
   canaries: 1
-  max_in_flight: 10
+  max_in_flight: 1
   serial: true
   canary_watch_time: 1000-20000
   update_watch_time: 1000-20000
