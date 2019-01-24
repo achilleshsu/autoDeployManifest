@@ -1,3 +1,7 @@
+# 1.0.5
+## Feature
+ [+] add iothub manifest
+
 # 1.0.4
 ## Feature
  [+] fix deploy release version

@@ -1,0 +1,354 @@
+---
+name: apps-iothub-stage
+releases:
+- name: cf-rabbitmq 
+  version: 250.0.0+dev.19
+- name: service-metrics
+  version: 1.5.11
+- name: loggregator #must this version
+  version: '101.5'
+- name: rabbitmq-metrics 
+  version: 9.8.0
+- name: routing    #must this version
+  version: 0.171.0
+- name: prometheus
+  version: 22.0.0
+- name: sysctl
+  version: '2'
+- name: syslog-migration
+  version: 11.1.1
+#- name: consul
+#  version: '191'
+
+instance_groups:
+- azs: 
+  - 'null' #need_to_change
+  env: {}
+  instances: 3
+  jobs:
+  - name: rabbitmq_exporter
+    properties:
+      rabbitmq_exporter:
+        exporterst:
+        - connections
+        - exchange
+        - node
+        - overview
+        - queue
+        rabbitmq:
+          password: ((apps_iothub_stage_root_password))
+          url: http://127.0.0.1:15672
+          user: ((apps_iothub_stage_root))
+        web:
+          port: 9125
+    release: prometheus
+  - name: sysctl
+    properties:
+      sysctl_conf: |
+        net.core.netdev_max_backlog=4096
+        net.core.somaxconn=32327
+        net.ipv4.ip_local_port_range=32768 60999
+        net.ipv4.tcp_keepalive_intvl=2
+        net.ipv4.tcp_keepalive_probes=2
+        net.ipv4.tcp_keepalive_time=300
+    release: sysctl
+  - consumes: {}
+    name: rabbitmq-server
+    provides: {}
+    release: cf-rabbitmq
+  - consumes: {}
+    name: metron_agent
+    provides: {}
+    release: loggregator
+  - consumes: {}
+    name: service-metrics
+    provides: {}
+    release: service-metrics
+  - consumes: {}
+    name: rabbitmq-server-metrics
+    provides: {}
+    release: rabbitmq-metrics
+  - consumes:
+      nats:
+        deployment: &cf_deploy_name cf-ffaf897ea018b915b449 #need_to_change
+        from: nats
+    name: route_registrar
+    provides: {}
+    release: routing
+#  - consumes:
+#      consul: nil
+#      consul_client:
+#        deployment: *cf_deploy_name
+#        from: consul_client_link
+#      consul_common:
+#        deployment: *cf_deploy_name
+#        from: consul_common_link
+#      consul_server: nil
+#    name: consul_agent
+#    properties:
+#      consul:
+#        client:
+#          enabled: true
+#    provides: {}
+#    release: consul
+  - consumes: {}
+    name: syslog_forwarder
+    provides: {}
+    release: syslog-migration
+  lifecycle: service
+  name: rabbitmq-server
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: rabbitmq-service
+    static_ips:
+    - 10.4.0.15
+    - 10.4.0.16
+    - 10.4.0.17
+  persistent_disk: 65535
+  properties:
+    loggregator:
+      tls:
+        ca_cert: |
+          -----BEGIN CERTIFICATE-----
+          MIIDDzCCAfegAwIBAgIVANCBPyVLhv2ZjHg02duqqXUuJRrHMA0GCSqGSIb3DQEB
+          CwUAMB8xCzAJBgNVBAYTAlVTMRAwDgYDVQQKDAdQaXZvdGFsMB4XDTE3MDUyMTA0
+          NDkyNloXDTIxMDUyMjA0NDkyNlowHzELMAkGA1UEBhMCVVMxEDAOBgNVBAoMB1Bp
+          dm90YWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCo4LTm0CLkxFkm
+          hcCV0Ip6APS4/Oa8Pw2oKy4z3grorRHz8GlTJm8tXjw8csUcjJBEPsGyaGrKEEdF
+          dAdsc/Mm0KnxtPGoR5AeEmMBZWc72tW0AvqpTGj0uW7MjCzSIdWoiCyGk21zo6G5
+          N0P8+XUir6JiX70XTIHAlgGPKnkSnFlEB/eDzLu1mOumTnRKuNwxQz4bv6KGupHi
+          DyjXYtwmLe5OvnEg2yfUuI2+aFYDqykhO/uny445SkFMG3yd4PmMxgwWSDCFUO7u
+          lo4BuPQQuaQcerGc4iaPSUyFgsa2esvuAeJv3zBtBF2G1EPu+pyQY8wjOQwO0uSa
+          POAd+dH9AgMBAAGjQjBAMB0GA1UdDgQWBBRCXC0GERv6Se7rIvB6mJnUZg6fIDAP
+          BgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQsFAAOC
+          AQEAhVZooz9p//iX3QghPIJlJ/kpfpmhpfghmbfMpb5A2iaCoWkhrLwqIG8idoQA
+          4lNzUh0bWRzoBowM8jzhL1Yl5i0uzJNgkl+pMKTJAcfVsXfw/ujza+Tg8S6He6iB
+          OZAmuejU8joH9Ish5XsBzE9+pRobgGFm+h/sprU2eGn8JvG6Unu6fnOMIzBd+YEx
+          FJ9z7A4JdDLEaFCN211dfPyv1R4jjLZrtGEJwalvGNLnL9dVYCnzMVLpiXIVnW1W
+          Srdiw/ipj3YHKoGVZs/9fvl25b9m1TeJ2FCJHnOImsOdWkUaI/LuXVT6jXtn6HKd
+          KOLordjAFYYS7TMpAGWBfqBMFw==
+          -----END CERTIFICATE-----
+        metron:
+          cert: |
+            -----BEGIN CERTIFICATE-----
+            MIIDVzCCAj+gAwIBAgIUdjZkUkrjOpQXoFGQlBKWUwEx7KAwDQYJKoZIhvcNAQEL
+            BQAwHzELMAkGA1UEBhMCVVMxEDAOBgNVBAoMB1Bpdm90YWwwHhcNMTcwOTE3MDYw
+            MDUyWhcNMTkwOTE3MDYwMDUyWjA5MQswCQYDVQQGEwJVUzEQMA4GA1UECgwHUGl2
+            b3RhbDEYMBYGA1UEAwwPbWV0cm9uX3Rsc19jZXJ0MIIBIjANBgkqhkiG9w0BAQEF
+            AAOCAQ8AMIIBCgKCAQEAx/CkCkEVO/bYNxRnDQXbzgLkNQQ7nrqNDT/n3ivI7KfE
+            lQ/z7nUH69kaIPi50C9k9Qqqom9JygGghsUfRzNF3qgOhXyv87DtJK96uXy5P+2e
+            Y1PcVJUgrCqFSrtk9NVYth2tPm0fwxSE3df7XSHKxJsyuXR19o6qomiDaY0H9QlW
+            +CYLXNtGaTCQ2q8oib8Xv/tYyNpWnzd43RJYEha1OGKk9PWqd9VEgU2qnEEUE0xz
+            C20dgkxtYYIRbaG2Hjraxf3Zh4IabUbFR0eKhCT5HczupQijGwpQkdyIjkl0fF0d
+            TXbI4eAYPkSWwpYbdDrbMS73inovndDGfcJ43i/IjwIDAQABo3EwbzAOBgNVHQ8B
+            Af8EBAMCB4AwHQYDVR0OBBYEFHl44t+dpiaqmM8N7MOH/dnVaodUMB0GA1UdJQQW
+            MBQGCCsGAQUFBwMCBggrBgEFBQcDATAfBgNVHSMEGDAWgBRCXC0GERv6Se7rIvB6
+            mJnUZg6fIDANBgkqhkiG9w0BAQsFAAOCAQEAFR9+82c/envfpgUA3r+jjbDALE1v
+            zvK+18zG+gSw0Ywy5dcP+OrNGWlH7FApwj8dT/CweXiD/UHZil030rsMngsLGz+W
+            gAWEQpt7MIVcmNPOf251eSo3HRa8+kk88XTMp92CdHH16Twby5lixVfZVUsMv+F3
+            t/q8gHkVO+cXqm87/IflA6gZZElu2sUI3FrmbQc2yRJqT8MAc5eRorlp6xkq0phz
+            PtqiCtOSwRFS/1nx1qv3fxoUsgjrMU9GXUckp9PoqP6tnftGprZVf754qh0BCQ+6
+            UE2Uul8Pn/QQScwi6hqCO48YT/3kUN9Kv1ghqrhz3zYoZTHa16xjgMM7YQ==
+            -----END CERTIFICATE-----
+          key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEAx/CkCkEVO/bYNxRnDQXbzgLkNQQ7nrqNDT/n3ivI7KfElQ/z
+            7nUH69kaIPi50C9k9Qqqom9JygGghsUfRzNF3qgOhXyv87DtJK96uXy5P+2eY1Pc
+            VJUgrCqFSrtk9NVYth2tPm0fwxSE3df7XSHKxJsyuXR19o6qomiDaY0H9QlW+CYL
+            XNtGaTCQ2q8oib8Xv/tYyNpWnzd43RJYEha1OGKk9PWqd9VEgU2qnEEUE0xzC20d
+            gkxtYYIRbaG2Hjraxf3Zh4IabUbFR0eKhCT5HczupQijGwpQkdyIjkl0fF0dTXbI
+            4eAYPkSWwpYbdDrbMS73inovndDGfcJ43i/IjwIDAQABAoIBAG1LdVCJrULfN+g8
+            Be0Pg81EtVzp2HF3Rr20blp7ktUTDJnzY4O5g8AAKJFXhbNxBP4Se55ZuXtskkS5
+            otR4CbyiH3YG5+QNlkSUjECzFk0E5q0jXXD7KCYVBFIKyDAyI9FBvb8/RbqND+h5
+            NVX+r+nzcLICIK3L5SjsetGLH4tpPJn+Vp4SRjISHzJYfKMdhquFuSTtRmsbunSG
+            9Rgj53ZWn941garkgbs7Z0c+TAznvuGKvgQFLGlc84f+VIV8tc+0LyMo3Aevw3zn
+            D0uJIE9z2RKTRyi77MVtg+LeVfqjiyOIrMYdyCRDAKHLmgc2P3DzFI6o9kpkDgcY
+            vL++7wkCgYEA80/rE05zxoBEm+z+16n1FgC0xgk1e9agZcwzyuvMtfhqJajTKSti
+            oq5Z+k3NRe0h0RodBH9JQctpS0jN8o/J1CaPV91syUv/LLNLrB+v1A7BPKoGILxU
+            sd32ya/opElj0bKhStqa4j5rfGVmWeQ9ObG0lVQD1FI8IzQ8AjWyFkUCgYEA0l26
+            aSo7IuWjtddyKylGnEpCdakNjZk4IXaEHcCTN11PmLWP296QmOwTZCQx4fo07JQ2
+            WrgzfppaZSOtfoO4mLd4Z5Y0G2V+0zR5xvMkk5CvPQ6fZfNp+GqUOTeV2dFOyjM6
+            Rm9o898VVDYKOGC4D7T7gWf+XvyzyJoL3QEzqsMCgYEA0IOYzb7Z8S9TnN0JuQDq
+            DKUmRuD1eN+CLjtF140krn3pWcTI0etgaFJKwfuTA24pIO3kGEqNGVmdLuuBs3IO
+            YUV6aq5T4F7EnCY7n5K4OF88syRyg/NiEdxK9qVOFhze8oLHP0MAoQslSkIL6NV0
+            stDcFW0eqwKejvzgwHQL3pECgYBXog32o04RQoKJTN/VlRNCJjk7VJo9w3c7kWiG
+            EGQDa06uOexc1oF8AtQtIlrZXWbQqwldj2B8PAauHUe37V1n2P5CgLLiOsyzZSfZ
+            tg4lnt8xWzcRvG4HuzZWA47cNzJQTzjWgLDC7squ0vg89iWW/XjMNqsjnLe0OF/6
+            x/ZjCwKBgGfjN0S0wuOZYsKAX0GmSOQBXJ7D6vMMaEIqgldb+51YIrIk91v5esgp
+            MV4ezkhtsT/aoO+PBkUTHltSJH+gJOTBy0IYjqUKdqCu7BZCh3+O6xh6Wi4O/2hn
+            TmsT2sXpyvcz3VAhrli/TS9OkkAy7ncPlhjQvVAKlzG7apUCCWNp
+            -----END RSA PRIVATE KEY-----
+    metron_agent:
+      deployment: apps-iothub-stage
+    rabbitmq-server:
+      administrators:
+        broker:
+          password: AsUGSdslW0z6PZadRw87sfpH-p4HKTXP
+          username: broker
+        management:
+          password: ((apps_iothub_stage_root_password))
+          username: ((apps_iothub_stage_root))
+      cluster_partition_handling: autoheal
+      config: Wwoge2tlcm5lbCwKICBbCiAgICB7aW5ldF9kaXN0X2xpc3Rlbl9taW4sIDMzNjcyfSwKICAgIHtpbmV0X2Rpc3RfbGlzdGVuX21heCwgMzM2NzJ9CiAgXX0sCiB7cmFiYml0LAogIFsKICAgIHtoYW5kc2hha2VfdGltZW91dCwgMzAwMDB9LAogICAge3NzbF9oYW5kc2hha2VfdGltZW91dCwgMzAwMDB9LAogICAge2NvbGxlY3Rfc3RhdGlzdGljc19pbnRlcnZhbCwxMjAwMDB9LAogICAge3ZtX21lbW9yeV9oaWdoX3dhdGVybWFyaywwLjY2fSwKICAgIHtzc2xfbGlzdGVuZXJzLCBbNTY3MV19LAogICAge3NzbF9vcHRpb25zLCBbe2NhY2VydGZpbGUsIi92YXIvdmNhcC9qb2JzL3JhYmJpdG1xLXNlcnZlci9ldGMvY2FjZXJ0LnBlbSJ9LAogICAgICAgICAgICAgICAgICAge2NlcnRmaWxlLCAgIi92YXIvdmNhcC9qb2JzL3JhYmJpdG1xLXNlcnZlci9ldGMvY2VydC5wZW0ifSwKICAgICAgICAgICAgICAgICAgIHtrZXlmaWxlLCAgICIvdmFyL3ZjYXAvam9icy9yYWJiaXRtcS1zZXJ2ZXIvZXRjL2tleS5wZW0ifQogICAgXX0sCiAgIHt0Y3BfbGlzdGVuX29wdGlvbnMsIFt7YmFja2xvZyw0MDk2fSx7bm9kZWxheSx0cnVlfSx7bGluZ2VyLHt0cnVlLDB9fSx7ZXhpdF9vbl9jbG9zZSwgZmFsc2V9LHtzbmRidWYsMzI3Njh9LHtyZWNidWYsMzI3Njh9LHtrZWVwYWxpdmUsIHRydWV9XX0KICBdfSwKICB7cmFiYml0bXFfbWFuYWdlbWVudCwgICAgICAgCiAgWwogICAge3JhdGVzX21vZGUsYmFzaWN9CiAgXX0sCiAge3JhYmJpdG1xX21xdHQsICAgICAgIAogIFsKICAgIHt0Y3BfbGlzdGVuX29wdGlvbnMsIFt7YmFja2xvZyw0MDk2fSx7bm9kZWxheSx0cnVlfSx7bGluZ2VyLHt0cnVlLDB9fSx7ZXhpdF9vbl9jbG9zZSwgZmFsc2V9LHtzbmRidWYsMzI3Njh9LHtyZWNidWYsMzI3Njh9LHtrZWVwYWxpdmUsIHRydWV9XX0sCiAgICB7c3NsX2xpc3RlbmVycywgICAgWzg4ODNdfQogIF19LAogIAogIHtwcm9tZXRoZXVzLCBbCiAgICB7cmFiYml0bXFfZXhwb3J0ZXIsIFsKICAgICAge2Nvbm5lY3Rpb25zX3RvdGFsX2VuYWJsZWQsIHRydWV9CiAgICBdfQogIF19LAogIAogIHtyYWJiaXRtcV93ZWJfbXF0dCwKICBbCiAgICB7d3NfcGF0aCwgIi93cyJ9CiAgXX0sCiAgCiAge3JhYmJpdG1xX3N0b21wLCAKICBbCgl7dGNwX2xpc3Rlbl9vcHRpb25zLCBbe2JhY2tsb2csNDA5Nn0se25vZGVsYXksdHJ1ZX0se2xpbmdlcix7dHJ1ZSwwfX0se2V4aXRfb25fY2xvc2UsIGZhbHNlfSx7c25kYnVmLDMyNzY4fSx7cmVjYnVmLDMyNzY4fSx7a2VlcGFsaXZlLCB0cnVlfV19LAogICAge3NzbF9saXN0ZW5lcnMsIMKgwqDCoFs2MTYxNF19CiAgXX0KXS4K
+      cookie:
+      disk_alarm_threshold: "{mem_relative,1.5}"
+      plugins:
+      - rabbitmq_amqp1_0
+      - rabbitmq_auth_backend_ldap
+      - rabbitmq_auth_mechanism_ssl
+      - rabbitmq_consistent_hash_exchange
+      - rabbitmq_federation
+      - rabbitmq_federation_management
+      - rabbitmq_management
+      - rabbitmq_management_visualiser
+      - rabbitmq_mqtt
+      - rabbitmq_web_mqtt
+      - rabbitmq_shovel
+      - rabbitmq_shovel_management
+      - rabbitmq_stomp
+      - rabbitmq_tracing
+      - rabbitmq_web_stomp
+      - rabbitmq_web_stomp_examples
+      - rabbitmq_event_exchange
+      - rabbitmq_jms_topic_exchange
+      - prometheus_rabbitmq_exporter
+      ports: 15672, 5672, 5671, 1883, 8883, 61613, 61614, 15674,15675
+      ssl:
+        cacert: "-----BEGIN CERTIFICATE-----\r\nMIID7TCCAtWgAwIBAgIJALd17NmFC1MiMA0GCSqGSIb3DQEBCwUAMIGLMQswCQYD\r\nVQQGEwJ0dzELMAkGA1UECAwCdHcxCzAJBgNVBAcMAnR3MSEwHwYDVQQKDBhJbnRl\r\ncm5ldCBXaWRnaXRzIFB0eSBMdGQxCzAJBgNVBAsMAnR3MRswGQYDVQQDDBIxMC41\r\nLjYzLjE0NC54aXAuaW8xFTATBgkqhkiG9w0BCQEWBmFhQGNjYzAgFw0xNzEwMjAw\r\nNzM1NDNaGA8yMTE3MDkyNjA3MzU0M1owgYsxCzAJBgNVBAYTAnR3MQswCQYDVQQI\r\nDAJ0dzELMAkGA1UEBwwCdHcxITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5\r\nIEx0ZDELMAkGA1UECwwCdHcxGzAZBgNVBAMMEjEwLjUuNjMuMTQ0LnhpcC5pbzEV\r\nMBMGCSqGSIb3DQEJARYGYWFAY2NjMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB\r\nCgKCAQEA0opPfmSYiXxSSGrFs/6KAzZrxTvZwgj2aqcpnyjj8EyxVVNi6pDzjD+8\r\nh6TY+2akowClHMOZ+gep3Mv7TFI+atlhTzBKsxjvO5FgJnmCwMvFXuIT3+IFbmzX\r\nUdY1kRAHa2AcOQtOlU02Snyzds7RH0xbAgvGRpYvMgBTOpbulQaaxiKPdiDgvcsS\r\n00jQ+Cl9CjR6VLvpfzpGTUZvPocCBp/nvnbPboKVB+TkpEnlJ972UIw+9x+TWNeZ\r\nGygFcjnmB+1RwVjqN2mjWulhIoD0Ynp+6I9/3w/qPcOTXtSCBJ012vc3gNXzJgkV\r\nexaM2nS1iT6Uzu/jEx6qbLuYAc0flQIDAQABo1AwTjAdBgNVHQ4EFgQULXkPMqYH\r\n8S+o6Z9/9bfwQ0AR84gwHwYDVR0jBBgwFoAULXkPMqYH8S+o6Z9/9bfwQ0AR84gw\r\nDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAECncqYSjKav6n/uWHXHC\r\nu88EuIpSlteH/TouXqttatIRYkQu62te678JUs6rKP2XsP5k1fb/7apcebDgmtPP\r\nqA9zDnswi4lgSZBIhwFHaby9fvJMp8iRsySb+n/UeLYhGlTdjd3aw9WUxkD64ug0\r\nNIjIiMkMrUgB1a00NHTiOTj/6v7gW3IqDgmTR+zSInd5UYjtSDoqnyk0lEw9Z4cm\r\nukwGNjXKDuhQQDiVPg+/w+B9z6Nldm9/5Gz2kUTXa7ihcVC5NSgoTjkx+HdOPEWw\r\nVAKJ6GbRNhRJO54wE7wkTlI5fBEzRM4MLscTNYlN3jYNth9q8a6Qw541xd0IVLnp\r\nyg==\r\n-----END
+          CERTIFICATE-----"
+        cert: "-----BEGIN CERTIFICATE-----\r\nMIIDezCCAmMCCQDQcKu7dFlK2jANBgkqhkiG9w0BAQsFADCBizELMAkGA1UEBhMC\r\ndHcxCzAJBgNVBAgMAnR3MQswCQYDVQQHDAJ0dzEhMB8GA1UECgwYSW50ZXJuZXQg\r\nV2lkZ2l0cyBQdHkgTHRkMQswCQYDVQQLDAJ0dzEbMBkGA1UEAwwSMTAuNS42My4x\r\nNDQueGlwLmlvMRUwEwYJKoZIhvcNAQkBFgZhYUBjY2MwIBcNMTcxMDIwMDczOTA5\r\nWhgPMjExNzA5MjYwNzM5MDlaMHExCzAJBgNVBAYTAnR3MQswCQYDVQQIDAJ0dzEL\r\nMAkGA1UEBwwCdHcxCzAJBgNVBAoMAnR3MQswCQYDVQQLDAJ0dzEbMBkGA1UEAwwS\r\nMTAuNS42My4xNDQueGlwLmlvMREwDwYJKoZIhvcNAQkBFgJ0dzCCASIwDQYJKoZI\r\nhvcNAQEBBQADggEPADCCAQoCggEBAKUe8bwH48CM7Dldp4mfTpk1MCp59WKTbDc/\r\nx1wOSDs5Ljb8BkrADnYasjtOaOC8J/4xRjAzK+Yb2JywfQFblUu3IKFT5pEkSOgD\r\nQelarvQxX1u5Ki2Mf6FCKHms1PRHXahCMGYR/3yeEcdjrzyzN+IwlI9CAaOzt/mp\r\nNJ4GJM7f1zncMON41Cg2mgxKNPntAQKWRkmRGGYFH3CiHJMfPGRqbLc7/5iYWe8K\r\nVafXpAPJnc49RH0o+mQr6tp23gsVtCUl8vPo3II0NprGsdQoF3CxdCYfucRTSyaB\r\nSU659mIfb8fA1r8N97lkWxdyLna+wbIBfrJNAjBuiu13tuSBaC0CAwEAATANBgkq\r\nhkiG9w0BAQsFAAOCAQEAi6tM2SrOXPQ7q26Dw60bNe3w92RywVYrXWRblHFW4Xo+\r\nk/dawXtN/EY0TsGjd2c2sdz1uttLIr72+819mGrWDwswx3ObSD13Qauh9GkVcWD8\r\nImKHMh6zJb+8IIyc/cSo+60JPdBa2XS0aAftvoxGMnUARkzLCu4nLoOF9YLm7Fkd\r\n/kXS7+BGtwbeW8+v/qtNyGUcwcud21otUU/aPIC6N5LPvFtDMJdFSHrp/RxrsWLJ\r\nKA/cCt4pbMWrP5bA2IE3GtWUR+maBUQLE6VNLA/JgkJngvqPSGEYqCUfBc0FNf9U\r\ncphHULnGWIc5s/To9iwiRDf+WxsTWU7BYCY6N/xnxw==\r\n-----END
+          CERTIFICATE-----"
+        enabled: true
+        fail_if_no_peer_cert: false
+        key: "-----BEGIN RSA PRIVATE KEY-----\r\nMIIEowIBAAKCAQEApR7xvAfjwIzsOV2niZ9OmTUwKnn1YpNsNz/HXA5IOzkuNvwG\r\nSsAOdhqyO05o4Lwn/jFGMDMr5hvYnLB9AVuVS7cgoVPmkSRI6ANB6Vqu9DFfW7kq\r\nLYx/oUIoeazU9EddqEIwZhH/fJ4Rx2OvPLM34jCUj0IBo7O3+ak0ngYkzt/XOdww\r\n43jUKDaaDEo0+e0BApZGSZEYZgUfcKIckx88ZGpstzv/mJhZ7wpVp9ekA8mdzj1E\r\nfSj6ZCvq2nbeCxW0JSXy8+jcgjQ2msax1CgXcLF0Jh+5xFNLJoFJTrn2Yh9vx8DW\r\nvw33uWRbF3Iudr7BsgF+sk0CMG6K7Xe25IFoLQIDAQABAoIBAQCMZZ9NLbgthKVm\r\nsYc+sUH3aw4lT8Whp5Af+g7c6xfno1r0TZ5b+KlTKqfZXXY3gETREbyIRzpQUeUA\r\ndeAUQ3bSBkesZNZrGtsSy5JDhGO2JjTanLqMOCZdSw93RclcW0H7Sywz3aHKp+ye\r\nCNh7WDdwD7aBiLI0Kx+HHKQsqTSq4LMyLcul7mDfjWqdM3oUnwXucl8NyP4+C8dJ\r\nmv0IiBPEIHbfSuYkuHBWZ2NELukXFaWNzTo0xUPQBHKnJMVrFDrod8da7nutf0Ff\r\nSBv1+EXfJ3a1rVRAc8MPAPMtwnc/zbRC5JqxDDpSiTeVV0j3ovHo8KMKAAxEJK0A\r\nAvXRrNQBAoGBANMhNMhl8Autrs/5Qbkh1ZlbnW8k3Gv3l8t+vAiWrPFFQGyh5pPv\r\np7mQN4U9q61Xuqf3cVI8+mNnKTk96eEpTSoY3rWikcwdZmiEgqgODy+eFG2vqaX2\r\nEe4N5hqKzdEgxmLnP/O7w6ikzqFysAT3vRGfK8iFC2uWvm9dXlI9f/3tAoGBAMg2\r\nkOOKCgwhmNnY+Q0NlGgyX4Uqgy+kdmGcSqOsJ8a4PMkVkH5jGSQroODKO6H3dk47\r\nQ/GBqLv5UNFGltEJboqdSqPTmeL3uip9WZQjPt8m2Biv0D2tUzDevT4GCGKfItJT\r\nz4es1bbbYbEydpHg3FcPM/azwaRmaexjR5UuY8tBAoGATQU8IC8v1tLRhwVDOKpj\r\nJcMKN9WWo7x7H71oEyoEhS/iRL77QtSWt1cpKe5Jhr8OVOAr8vhTz5d+rmcrvvw2\r\nLjlMZa6cyX2gMljE4VHfsFtW0HzYwrZ17AYd/2jLlJMETGhYKC5DPm6BAty34dgO\r\nnTMX4drHQ8SGTFIfapkM7DECgYBM5xCuJbaIRFtmyf2XsvCfOUIRb2vmX+CMy7Cr\r\nv5Ojs969SkgvE7dzekKYNXXEV74cfI0zdZ8vXKtbRybk8h+ApLwnwz5nvMnISk+f\r\nJA6hPlVg3h85oZrDubqs2TpdT0zbxw9+yLdqPkf+/SgoDlv0IMXP6+nkUOY8w0Ga\r\nnq/8QQKBgB2mVImM/QuisZ+zqZvZER0APxvNu8wiyA80KBOwcfEpEb1A7TK47m+D\r\ntzgoiUBsBjY52jTFDqjEPadKO9FT08kIyzHG6jIeULtQ/E0q6Mo8A7uXTxZ7mGGa\r\nWMgDQtUXbf/b4ca3uusnmzxJ6kIBaajY6WlIW77Nigr+FaM16Dzg\r\n-----END
+          RSA PRIVATE KEY-----"
+        verification_depth: 5
+        verify: false
+        versions:
+        - tlsv1.1
+        - tlsv1.2
+    route_registrar:
+      routes:
+      - name: apps-iothub-stage
+        port: 15672
+        registration_interval: 20s
+        uris: #need_to_change
+        - apps-iothub-stage.wise-paas.com
+    service_metrics:
+      execution_interval_seconds: 30
+      metrics_command: "/var/vcap/packages/rabbitmq-server-metrics/bin/rabbitmq-server-metrics"
+      metrics_command_args:
+      - "-erlangBinPath=/var/vcap/packages/erlang/bin/"
+      - "-rabbitmqCtlPath=/var/vcap/packages/rabbitmq-server/bin/rabbitmqctl"
+      - "-logPath=/var/vcap/sys/log/service-metrics/rabbitmq-server-metrics.log"
+      - "-rabbitmqUsername=" #need_to_change
+      - "-rabbitmqPassword=" #need_to_change
+      - "-rabbitmqApiEndpoint=http://127.0.0.1:15672"
+      origin: p-rabbitmq
+    syslog:
+      address: elk.eastasia.cloudapp.azure.com
+      custom_rule: |
+        module(load="imfile")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/rabbit@*-sasl.log"
+              Tag="rabbitmq_server_sasl")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/rabbit@*.log"
+              Tag="rabbitmq_server")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/startup_stderr.log"
+              Tag="rabbitmq_server_startup_stderr")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/startup_stdout.log"
+              Tag="rabbitmq_server_startup_stdout")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/shutdown_stdout.log"
+              Tag="rabbitmq_server_shutdown_stdout")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/shutdown_stderr.log"
+              Tag="rabbitmq_server_shutdown_stderr")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/management-ui/access.log*"
+              Tag="rabbitmq_server_http_api_access")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/upgrade.log"
+              Tag="rabbitmq_server_upgrade")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/init.log"
+              Tag="rabbitmq_server_init")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/node-check.log"
+              Tag="rabbitmq_server_node_check")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/cluster-check.log"
+              Tag="rabbitmq_server_cluster_check")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/post-deploy.stderr.log"
+              Tag="rabbitmq_server_post_deploy_stderr")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/post-deploy.stdout.log"
+              Tag="rabbitmq_server_post_deploy_stdout")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/drain.log"
+              Tag="rabbitmq_server_drain")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/rabbitmq-server/pre-start.log"
+              Tag="rabbitmq_server_pre_start")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/route_registrar/route_registrar.log"
+              Tag="rabbitmq_route_registrar_stdout")
+
+        input(type="imfile"
+              File="/var/vcap/sys/log/route_registrar/route_registrar.err.log"
+              Tag="rabbitmq_route_registrar_stderr")
+      forward_files: false
+      migration:
+        disabled: true
+        message_format: rfc5424
+      permitted_peer:
+      port:
+      tls_enabled: false
+      transport: tcp
+    syslog_daemon_config:
+      enable: false
+  stemcell: bosh-azure-hyperv-ubuntu-trusty-go_agent
+  update:
+    max_in_flight: 1
+  vm_type: Standard_DS12_v2
+  
+variables:
+- name: apps_iothub_stage_root
+  type: password
+- name: apps_iothub_stage_root_password
+  type: password
+
+stemcells:
+- alias: bosh-azure-hyperv-ubuntu-trusty-go_agent
+  os: ubuntu-trusty
+  version: latest
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-300000
+  max_errors: 2
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 30000-300000
