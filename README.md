@@ -31,10 +31,10 @@ bosh -e spacex deploy -d ops-influxdb-stage ops-influxdb-stage.yml --vars-store 
 ```
 
 4. IOT-Hub 佈署方式
-(1) 請先使用vi 編輯檔案中標示 #need_to_change 的位置，除了prometheus帳號密碼位置
-(2) 執行下列佈署指令產生 password。
-(3) 查看 ../password-vars.yml 檔案將帳號密碼填回prometheus帳號密碼位置
-(4) 再次執行下列指令
+* 請先使用vi 編輯檔案中標示 #need_to_change 的位置，除了prometheus帳號密碼位置
+* 執行下列佈署指令產生 password。
+* 查看 ../password-vars.yml 檔案將帳號密碼填回prometheus帳號密碼位置
+* 再次執行下列指令
 ※ 備註，部份的release版本需要一致，否則會出現錯誤
 (production)
 ```
