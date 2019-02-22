@@ -1,3 +1,7 @@
+# 1.0.6
+## Feature
+ [+] add public branch
+
 # 1.0.5
 ## Feature
  [+] add iothub manifest

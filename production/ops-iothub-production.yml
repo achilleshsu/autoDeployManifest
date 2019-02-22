@@ -2,7 +2,7 @@
 name: ops-iothub-production
 releases:
 - name: cf-rabbitmq 
-  version: 250.0.0+dev.19
+  version: 250.0.0+dev.20
 - name: service-metrics
   version: 1.5.11
 - name: loggregator #must this version
@@ -22,7 +22,9 @@ releases:
 
 instance_groups:
 - azs: 
-  - 'null' #need_to_change
+  - z1 #need_to_change
+  - z2
+  - z3
   env: {}
   instances: 3
   jobs:
@@ -70,7 +72,7 @@ instance_groups:
     release: rabbitmq-metrics
   - consumes:
       nats:
-        deployment: &cf_deploy_name cf-ffaf897ea018b915b449 #need_to_change
+        deployment: &cf_deploy_name cf #need_to_change
         from: nats
     name: route_registrar
     provides: {}
@@ -103,9 +105,14 @@ instance_groups:
     - gateway
     name: rabbitmq-service
     static_ips:
-    - 10.4.0.20
-    - 10.4.0.21
-    - 10.4.0.22
+    - 172.21.16.20
+    - 172.21.32.20
+    - 172.21.48.20
+  - name: vip
+    static_ips:
+    - 13.75.69.189
+    - 13.75.69.249
+    - 13.75.64.228
   persistent_disk: 65535
   properties:
     loggregator:
@@ -235,7 +242,7 @@ instance_groups:
         port: 15672
         registration_interval: 20s
         uris: #need_to_change
-        - ops-iothub-production.wise-paas.com
+        - ops-iothub-production.wise-paas.io
     service_metrics:
       execution_interval_seconds: 30
       metrics_command: "/var/vcap/packages/rabbitmq-server-metrics/bin/rabbitmq-server-metrics"
@@ -243,12 +250,12 @@ instance_groups:
       - "-erlangBinPath=/var/vcap/packages/erlang/bin/"
       - "-rabbitmqCtlPath=/var/vcap/packages/rabbitmq-server/bin/rabbitmqctl"
       - "-logPath=/var/vcap/sys/log/service-metrics/rabbitmq-server-metrics.log"
-      - "-rabbitmqUsername=" #need_to_change
-      - "-rabbitmqPassword=" #need_to_change
+      - "-rabbitmqUsername=vjbac7ca7gbhrn21sfeq" #need_to_change
+      - "-rabbitmqPassword=l1mimohchqow30wmk4w5" #need_to_change
       - "-rabbitmqApiEndpoint=http://127.0.0.1:15672"
       origin: p-rabbitmq
     syslog:
-      address: elk.eastasia.cloudapp.azure.com
+      address: 
       custom_rule: |
         module(load="imfile")
 
@@ -329,7 +336,7 @@ instance_groups:
       transport: tcp
     syslog_daemon_config:
       enable: false
-  stemcell: bosh-azure-hyperv-ubuntu-trusty-go_agent
+  stemcell: bosh-azure-hyperv-ubuntu-xenial-go_agent
   update:
     max_in_flight: 1
   vm_type: Standard_DS2_v2
@@ -341,14 +348,14 @@ variables:
   type: password
 
 stemcells:
-- alias: bosh-azure-hyperv-ubuntu-trusty-go_agent
-  os: ubuntu-trusty
-  version: latest
+- alias: bosh-azure-hyperv-ubuntu-xenial-go_agent
+  os: ubuntu-xenial
+  version: 'latest'
 
 update:
   canaries: 1
   canary_watch_time: 30000-300000
   max_errors: 2
   max_in_flight: 1
-  serial: false
+  serial: true
   update_watch_time: 30000-300000

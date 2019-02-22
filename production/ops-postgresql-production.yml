@@ -6,14 +6,21 @@ instance_groups:
   - z1
   - z2
   instances: 2
-  vm_type: small
+  vm_type: Standard_DS2_v2
   stemcell: default
   persistent_disk_type: 128GB
   networks:
-  - name: &network_name db-service
+  - default:
+    - dns
+    - gateway
+    name: &network_name db-service
     static_ips:
-    - 10.100.40.1
-    - 10.100.40.2
+    - 172.22.16.40
+    - 172.22.32.40
+  - name: vip
+    static_ips:
+    - 40.83.76.167
+    - 40.83.77.133
   jobs:
   - name: redis
     release: postgres-replica-release
@@ -43,6 +50,7 @@ instance_groups:
     release: postgres-replica-release
     properties:
       password: ((ops_postgresql_production_root_password))
+      connection: 2000
       metering:
         database: ((ops_postgresql_production_billing))
         username: ((ops_postgresql_production_billing_root))
@@ -95,7 +103,7 @@ update:
 
 stemcells:
 - alias: default
-  os: ubuntu-trusty
+  os: ubuntu-xenial
   version: 'latest'
 
 releases:

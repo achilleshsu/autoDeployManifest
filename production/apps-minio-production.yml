@@ -1,0 +1,44 @@
+---
+name: apps-minio-production
+releases:
+- name: minio
+  version: "1.0.1"
+
+stemcells:
+- alias: os-stemcell
+  os: ubuntu-xenial
+  version: 'latest'
+
+instance_groups:
+- name: minio-azure
+  instances: 1
+  jobs:
+  - name: minio-azure
+    release: minio
+
+  vm_type: minimal
+  stemcell: os-stemcell
+  persistent_disk_type: 5GB
+  azs:
+  - z1
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: db-service
+    static_ips:
+    - 172.22.16.51
+  - name: vip
+    static_ips:
+    - 40.83.101.113
+
+update:
+  canaries: 1
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
+  max_in_flight: 1
+
+properties:
+  credential:
+    accesskey: miniowisepaasio
+    secretkey: test ##need_to_change

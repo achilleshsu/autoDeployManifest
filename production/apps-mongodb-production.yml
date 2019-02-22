@@ -7,7 +7,7 @@ releases:
 
 stemcells:
 - alias: trusty
-  os: ubuntu-trusty
+  os: ubuntu-xenial
   version: 'latest'
 
 instance_groups:
@@ -18,7 +18,7 @@ instance_groups:
     release: *release_name
     properties:
       mongodb:
-        connection: 3000
+        connection: 4500
         admin:
           user: ((apps_mongodb_production_admin))
           password: ((apps_mongodb_production_admin_password))
@@ -50,7 +50,7 @@ instance_groups:
           uri: mongodb://((apps_mongodb_production_root)):((apps_mongodb_production_root_password))@127.0.0.1:27017
           
   vm_type: medium
-  persistent_disk_type: 512GB
+  persistent_disk_type: 4T
   stemcell: trusty
   networks:
   - default:
@@ -58,9 +58,14 @@ instance_groups:
     - gateway
     name: &network_name db-service
     static_ips:
-    - 10.100.10.1
-    - 10.100.10.2
-    - 10.100.10.3
+    - 172.22.16.10
+    - 172.22.32.10
+    - 172.22.48.10
+  - name: vip
+    static_ips:
+    - 40.83.74.54
+    - 40.83.74.122
+    - 40.83.74.253
   azs:
    - z1
    - z2
