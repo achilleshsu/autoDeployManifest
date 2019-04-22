@@ -22,7 +22,7 @@ instance_groups:
     release: *release_name
   - name: kapacitor
     release: *release_name
-  vm_type: small
+  vm_type: small-lowmem
   persistent_disk_type: 512GB
   stemcell: trusty
   networks:
@@ -33,7 +33,7 @@ instance_groups:
     static_ips:
     - 10.100.48.121
   azs:
-  - z1
+  - z3
 
 properties:
   influxdb:
