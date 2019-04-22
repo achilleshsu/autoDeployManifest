@@ -2,6 +2,8 @@ name: apps-influxdb-production
 releases:
   - name: &release_name influxdb
     version: '1.0.14'
+    url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/influxdb-release-1.0.14.tgz
+    sha1: b8c4091ef0631f59c841cb88332c2adaba84a9c8
 
 stemcells:
 - alias: trusty
@@ -20,7 +22,7 @@ instance_groups:
     release: *release_name
   - name: kapacitor
     release: *release_name
-  vm_type: large
+  vm_type: medium
   persistent_disk_type: 512GB
   stemcell: trusty
   networks:
@@ -29,7 +31,7 @@ instance_groups:
     - gateway
     name: &network_name db-service
     static_ips:
-    - 10.100.20.1
+    - 10.100.16.120
   azs:
   - z1
 

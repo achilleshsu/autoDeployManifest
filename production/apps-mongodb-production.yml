@@ -2,8 +2,12 @@ name: apps-mongodb-production
 releases:
   - name: &release_name mongo-shard-release
     version: '1.0.14'
+    url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/mongo-shard-release-1.0.14.tgz
+    sha1: 846bc9599691340bcfd131e50a47c7d85891980e
   - name: &prometheus prometheus
     version: '22.0.0'
+    url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/prometheus-boshrelease-22.0.0.tgz
+    sha1: c6c9dd3530ccf94eefc70b11482e77eafc20a0ef
 
 stemcells:
 - alias: trusty
@@ -58,9 +62,9 @@ instance_groups:
     - gateway
     name: &network_name db-service
     static_ips:
-    - 10.100.10.1
-    - 10.100.10.2
-    - 10.100.10.3
+    - 10.100.16.110
+    - 10.100.32.110
+    - 10.100.48.110
   azs:
    - z1
    - z2

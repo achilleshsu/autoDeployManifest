@@ -1,3 +1,7 @@
+# 1.0.6
+## Feature
+ [+] private cloud auto deploy version
+
 # 1.0.5
 ## Feature
  [+] add iothub manifest

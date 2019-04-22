@@ -12,8 +12,8 @@ instance_groups:
   networks:
   - name: &network_name db-service
     static_ips:
-    - 10.100.40.1
-    - 10.100.40.2
+    - 10.100.16.140
+    - 10.100.32.140
   jobs:
   - name: redis
     release: postgres-replica-release
@@ -101,7 +101,13 @@ stemcells:
 releases:
 - name: postgres-replica-release
   version: '1.0.12'
+  url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/postgres-replica-release-1.0.12.tgz
+  sha1: 8ecd8e3bd7d0b7ad34c4cfa3339f9e681155013a
 - name: prometheus
   version: '22.0.0'
+  url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/prometheus-boshrelease-22.0.0.tgz
+  sha1: c6c9dd3530ccf94eefc70b11482e77eafc20a0ef
 - name: sysctl
   version: '2'
+  url: http://wise-paas.oss-cn-beijing.aliyuncs.com/bosh-release/sysctl-release-2.tgz
+  sha1: 09ae3d2271630653cceec115282004bfef1c694b

@@ -1,0 +1,9 @@
+---
+- type: remove
+  path: /releases/name=postgres-replica-release/url
+
+- type: remove
+  path: /releases/name=prometheus/url
+
+- type: remove
+  path: /releases/name=sysctl/url

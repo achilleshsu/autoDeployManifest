@@ -1,0 +1,6 @@
+---
+- type: remove
+  path: /releases/name=mongo-shard-release/url
+
+- type: remove
+  path: /releases/name=prometheus/url
