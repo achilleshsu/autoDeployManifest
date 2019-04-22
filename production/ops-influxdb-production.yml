@@ -47,6 +47,8 @@ variables:
   type: password
 - name: ops_influxdb_production_root_password
   type: password
+- name: ops_influxdb_production_metering_database
+  type: password
 - name: ops_influxdb_production_metering_root
   type: password
 - name: ops_influxdb_production_metering_root_password

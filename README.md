@@ -18,6 +18,14 @@ bosh -e spacex deploy -d ops-influxdb-production ops-influxdb-production.yml --v
 bosh -e spacex deploy -d ops-influxdb-healthcheck ops-influxdb-healthcheck.yml --vars-store ../password-vars.yml --ops-file ../operations/ops-influxdb-healthcheck-operations.yml
 ```
 
+4. 自動建立metering 用戶腳本 (influxdb)
+```
+cd autoDeployManifest/influxdb_create_metering_user
+chmod 755 influxdb_create_metering.sh
+./influxdb_create_metering.sh
+```
+
+
 備註: 私有雲DB使用清單
 
 服務名稱 | 數量 | IP | disk_size(GB) | vm_type(GB) | cpu (core) | mem (GB)
