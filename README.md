@@ -21,6 +21,7 @@ bosh -e spacex deploy -d ops-influxdb-healthcheck ops-influxdb-healthcheck.yml -
 4. 自動建立metering 用戶腳本 (influxdb)
 ```
 cd autoDeployManifest/influxdb_create_metering_user
+sudo dpkg -i influxdb_1.6.1_amd64.deb
 chmod 755 influxdb_create_metering.sh
 ./influxdb_create_metering.sh
 ```
