@@ -10,12 +10,12 @@ cd autoDeployManifest/production
 ```
 3. 執行佈署指令 (production)
 ```
-bosh -e spacex deploy -d apps-postgresql-production apps-postgresql-production.yml --vars-store ../password-vars.yml --ops-file ../operations/apps-postgresql-production-operations.yml
-bosh -e spacex deploy -d ops-postgresql-production ops-postgresql-production.yml --vars-store ../password-vars.yml --ops-file ../operations/ops-postgresql-production-operations.yml
-bosh -e spacex deploy -d apps-mongodb-production apps-mongodb-production.yml --vars-store ../password-vars.yml --ops-file ../operations/apps-mongodb-production-operations.yml
-bosh -e spacex deploy -d apps-influxdb-production apps-influxdb-production.yml --vars-store ../password-vars.yml --ops-file ../operations/apps-influxdb-production-operations.yml
-bosh -e spacex deploy -d ops-influxdb-production ops-influxdb-production.yml --vars-store ../password-vars.yml --ops-file ../operations/ops-influxdb-production-operations.yml
-bosh -e spacex deploy -d ops-influxdb-healthcheck ops-influxdb-healthcheck.yml --vars-store ../password-vars.yml --ops-file ../operations/ops-influxdb-healthcheck-operations.yml
+bosh -e spacex deploy -d apps-postgresql-production apps-postgresql-production.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/apps-postgresql-production-operations.yml
+bosh -e spacex deploy -d ops-postgresql-production ops-postgresql-production.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/ops-postgresql-production-operations.yml
+bosh -e spacex deploy -d apps-mongodb-production apps-mongodb-production.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/apps-mongodb-production-operations.yml
+bosh -e spacex deploy -d apps-influxdb-production apps-influxdb-production.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/apps-influxdb-production-operations.yml
+bosh -e spacex deploy -d ops-influxdb-production ops-influxdb-production.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/ops-influxdb-production-operations.yml
+bosh -e spacex deploy -d ops-influxdb-healthcheck ops-influxdb-healthcheck.yml --vars-store /opt/spacex/workspaces/db-vars.yml --ops-file ../operations/ops-influxdb-healthcheck-operations.yml
 ```
 
 4. 自動建立metering 用戶腳本 (influxdb)
