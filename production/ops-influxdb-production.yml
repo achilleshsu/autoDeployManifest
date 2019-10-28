@@ -16,12 +16,27 @@ instance_groups:
   jobs:
   - name: influxdb
     release: *release_name
+    properties:
+      influxdb:
+        admin:
+          user: ((apps_influxdb_production_root))
+          password: ((apps_influxdb_production_root_password))    
   - name: chronograf
     release: *release_name
   - name: telegraf
     release: *release_name
+    properties:
+      influxdb:
+        admin:
+          user: ((apps_influxdb_production_root))
+          password: ((apps_influxdb_production_root_password))    
   - name: kapacitor
     release: *release_name
+    properties:
+      influxdb:
+        admin:
+          user: ((apps_influxdb_production_root))
+          password: ((apps_influxdb_production_root_password))    
   vm_type: small-lowmem
   persistent_disk_type: 512GB
   stemcell: trusty

@@ -1,3 +1,7 @@
+# 1.0.7
+## Feature
+ [+] chage influxdb manifest bosh v1 to v2 
+
 # 1.0.6
 ## Feature
  [+] private cloud auto deploy version
