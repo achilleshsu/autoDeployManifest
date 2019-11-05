@@ -19,8 +19,8 @@ instance_groups:
     properties:
       influxdb:
         admin:
-          user: ((apps_influxdb_production_root))
-          password: ((apps_influxdb_production_root_password))    
+          user: ((ops_influxdb_production_root))
+          password: ((ops_influxdb_production_root_password))    
   - name: chronograf
     release: *release_name
   - name: telegraf
@@ -28,15 +28,15 @@ instance_groups:
     properties:
       influxdb:
         admin:
-          user: ((apps_influxdb_production_root))
-          password: ((apps_influxdb_production_root_password))    
+          user: ((ops_influxdb_production_root))
+          password: ((ops_influxdb_production_root_password))    
   - name: kapacitor
     release: *release_name
     properties:
       influxdb:
         admin:
-          user: ((apps_influxdb_production_root))
-          password: ((apps_influxdb_production_root_password))    
+          user: ((ops_influxdb_production_root))
+          password: ((ops_influxdb_production_root_password))    
   vm_type: small-lowmem
   persistent_disk_type: 512GB
   stemcell: trusty
@@ -50,23 +50,10 @@ instance_groups:
   azs:
   - z3
 
-properties:
-  influxdb:
-    admin:
-      user: ((ops_influxdb_production_root))
-      password: ((ops_influxdb_production_root_password))
-    database: test
-
 variables:
 - name: ops_influxdb_production_root
   type: password
 - name: ops_influxdb_production_root_password
-  type: password
-- name: ops_influxdb_production_metering_database
-  type: password
-- name: ops_influxdb_production_metering_root
-  type: password
-- name: ops_influxdb_production_metering_root_password
   type: password
     
 update:

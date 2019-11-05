@@ -1,3 +1,7 @@
+# 1.0.8
+## buf fix
+ [+] fix influxdb bug
+ 
 # 1.0.7
 ## Feature
  [+] chage influxdb manifest bosh v1 to v2 
