@@ -6,12 +6,14 @@ releases:
     version: '22.0.0'
 
 stemcells:
-- alias: trusty
+- alias: default
   os: ubuntu-xenial
   version: 'latest'
 
 instance_groups:
 - name: mongodb
+  env:
+    persistent_disk_fs: xfs
   instances: 3
   jobs:
   - name: mongodb
@@ -51,7 +53,7 @@ instance_groups:
           
   vm_type: medium
   persistent_disk_type: 4T
-  stemcell: trusty
+  stemcell: default
   networks:
   - default:
     - dns

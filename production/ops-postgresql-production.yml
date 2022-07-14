@@ -5,6 +5,8 @@ instance_groups:
   azs:
   - z1
   - z2
+  env:
+    persistent_disk_fs: xfs
   instances: 2
   vm_type: Standard_DS2_v2
   stemcell: default

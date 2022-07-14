@@ -2,6 +2,8 @@ name: apps-postgresql-stage
 
 instance_groups:
 - name: postgresql
+  env:
+    persistent_disk_fs: xfs
   azs:
   - z1
   - z2

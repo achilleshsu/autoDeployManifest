@@ -1,6 +1,8 @@
 # 1.0.7 
 ## Feature
  [+] update influxdb to 1.7.10
+ [+] add xfs
+ [+] change image to xenial
 
 # 1.0.6
 ## Feature

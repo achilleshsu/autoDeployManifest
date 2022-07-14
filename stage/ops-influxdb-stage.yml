@@ -6,12 +6,14 @@ releases:
     version: '19.0.0'
 
 stemcells:
-- alias: trusty
-  os: ubuntu-trusty
+- alias: xenial
+  os: ubuntu-xenial
   version: 'latest'
 
 instance_groups:
 - name: influxdb
+  env:
+    persistent_disk_fs: xfs
   instances: 1
   jobs:
   - name: influxdb
@@ -26,7 +28,7 @@ instance_groups:
     release: prometheus
   vm_type: medium
   persistent_disk_type: 512GB
-  stemcell: trusty
+  stemcell: xenial
   networks:
   - default:
     - dns

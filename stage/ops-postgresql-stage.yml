@@ -2,6 +2,8 @@ name: ops-postgresql-stage
 
 instance_groups:
 - name: redis_psql
+  env:
+    persistent_disk_fs: xfs
   azs:
   - z1
   - z2
