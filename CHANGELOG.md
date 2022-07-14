@@ -1,3 +1,7 @@
+# 1.0.9 (20220714)
+## Feature
+ [+] update influxdb release to 1.7.10
+
 # 1.0.8
 ## buf fix
  [+] fix influxdb bug
