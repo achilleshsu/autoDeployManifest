@@ -16,6 +16,8 @@ stemcells:
 
 instance_groups:
 - name: mongodb
+  env:
+    persistent_disk_fs: xfs
   instances: 3
   jobs:
   - name: mongodb

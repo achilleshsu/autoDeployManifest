@@ -1,6 +1,8 @@
 # 1.0.9 (20220714)
 ## Feature
  [+] update influxdb release to 1.7.10
+ [+] change to ubuntu-xenial
+ [+] add persistent_disk_fs: xfs
 
 # 1.0.8
 ## buf fix

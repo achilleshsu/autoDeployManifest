@@ -2,6 +2,8 @@ name: ops-postgresql-production
 
 instance_groups:
 - name: redis_psql
+  env:
+    persistent_disk_fs: xfs
   azs:
   - z1
   - z2
@@ -95,7 +97,7 @@ update:
 
 stemcells:
 - alias: default
-  os: ubuntu-trusty
+  os: ubuntu-xenial
   version: 'latest'
 
 releases:

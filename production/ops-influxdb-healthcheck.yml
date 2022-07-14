@@ -6,12 +6,14 @@ releases:
 #    sha1: b8c4091ef0631f59c841cb88332c2adaba84a9c8
     
 stemcells:
-- alias: trusty
-  os: ubuntu-trusty
+- alias: default
+  os: ubuntu-xenial
   version: 'latest'
 
 instance_groups:
 - name: influxdb
+  env:
+    persistent_disk_fs: xfs
   instances: 1
   jobs:
   - name: influxdb
@@ -39,7 +41,7 @@ instance_groups:
           password: ((ops_influxdb_production_root_passwordd))    
   vm_type: small-lowmem
   persistent_disk_type: 512GB
-  stemcell: trusty
+  stemcell: default
   networks:
   - default:
     - dns
