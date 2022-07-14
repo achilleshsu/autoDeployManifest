@@ -1,3 +1,7 @@
+# 1.0.7 
+## Feature
+ [+] update influxdb to 1.7.10
+
 # 1.0.6
 ## Feature
  [+] add public branch

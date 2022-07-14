@@ -1,7 +1,7 @@
 name: ops-influxdb-healthcheck
 releases:
   - name: &release_name influxdb
-    version: '1.0.14'
+    version: '1.7.10'
 
 stemcells:
 - alias: trusty
